@@ -19,14 +19,20 @@ from sglang.test.test_utils import (
 class TestBenchOneBatch(CustomTestCase):
 
     def test_bs1_small(self):
-        output_throughput = run_bench_one_batch(
-            DEFAULT_SMALL_MODEL_NAME_FOR_TEST, ["--cuda-graph-max-bs", "2"]
-        )
+        args = ["--cuda-graph-max-bs", "2"]
+        if os.environ.get("AMD_CI") == "1":
+            args += ["--mem-frac", "0.7"]
+
+        output_throughput = run_bench_one_batch(DEFAULT_SMALL_MODEL_NAME_FOR_TEST, args)
         self.assertGreater(output_throughput, 50)
 
     def test_bs1_default(self):
+        args = ["--cuda-graph-max-bs", "2"]
+        if os.environ.get("AMD_CI") == "1":
+            args += ["--mem-frac", "0.7"]
+
         output_throughput = run_bench_offline_throughput(
-            DEFAULT_MODEL_NAME_FOR_TEST, ["--cuda-graph-max-bs", "2"]
+            DEFAULT_MODEL_NAME_FOR_TEST, args
         )
 
         if is_in_ci():

@@ -1,3 +1,4 @@
+import os
 import time
 import unittest
 from types import SimpleNamespace
@@ -20,11 +21,16 @@ class TestTorchCompileMoe(CustomTestCase):
     def setUpClass(cls):
         cls.model = DEFAULT_SMALL_MOE_MODEL_NAME_FOR_TEST
         cls.base_url = DEFAULT_URL_FOR_TEST
+
+        other_args = ["--enable-torch-compile", "--torch-compile-max-bs", "4"]
+        if os.environ.get("AMD_CI") == "1":
+            other_args += ["--mem-frac", "0.7"]
+
         cls.process = popen_launch_server(
             cls.model,
             cls.base_url,
             timeout=DEFAULT_TIMEOUT_FOR_SERVER_LAUNCH,
-            other_args=["--enable-torch-compile", "--torch-compile-max-bs", "4"],
+            other_args=other_args,
         )
 
     @classmethod

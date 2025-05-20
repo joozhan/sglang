@@ -19,11 +19,15 @@ from sglang.test.test_utils import (
 class TestBenchServing(CustomTestCase):
 
     def test_offline_throughput_default(self):
+        other_args = []
+        if os.environ.get("AMD_CI") == "1":
+            other_args += ["--mem-frac", "0.7"]
+
         res = run_bench_serving(
             model=DEFAULT_MODEL_NAME_FOR_TEST,
             num_prompts=500,
             request_rate=float("inf"),
-            other_server_args=[],
+            other_server_args=other_args,
         )
 
         if is_in_ci():
@@ -37,11 +41,15 @@ class TestBenchServing(CustomTestCase):
                 self.assertGreater(res["output_throughput"], 3800)
 
     def test_offline_throughput_non_stream_small_batch_size(self):
+        other_args = ["--max-running-requests", "10"]
+        if os.environ.get("AMD_CI") == "1":
+            other_args += ["--mem-frac", "0.7"]
+
         res = run_bench_serving(
             model=DEFAULT_MODEL_NAME_FOR_TEST,
             num_prompts=200,
             request_rate=float("inf"),
-            other_server_args=["--max-running-requests", "10"],
+            other_server_args=other_args,
             dataset_name="sharegpt",
             random_input_len=None,
             random_output_len=None,
@@ -57,11 +65,15 @@ class TestBenchServing(CustomTestCase):
             self.assertGreater(res["output_throughput"], 1050)
 
     def test_offline_throughput_without_radix_cache(self):
+        other_args = ["--disable-radix-cache"]
+        if os.environ.get("AMD_CI") == "1":
+            other_args += ["--mem-frac", "0.7"]
+
         res = run_bench_serving(
             model=DEFAULT_MODEL_NAME_FOR_TEST,
             num_prompts=500,
             request_rate=float("inf"),
-            other_server_args=["--disable-radix-cache"],
+            other_server_args=other_args,
         )
 
         if is_in_ci():
@@ -90,16 +102,20 @@ class TestBenchServing(CustomTestCase):
             self.assertGreater(res["output_throughput"], 2600)
 
     def test_offline_throughput_with_triton_attention_backend(self):
+        other_args = [
+            "--attention-backend",
+            "triton",
+            "--context-length",
+            "8192",
+        ]
+        if os.environ.get("AMD_CI") == "1":
+            other_args += ["--mem-frac", "0.7"]
+
         res = run_bench_serving(
             model=DEFAULT_MODEL_NAME_FOR_TEST,
             num_prompts=500,
             request_rate=float("inf"),
-            other_server_args=[
-                "--attention-backend",
-                "triton",
-                "--context-length",
-                "8192",
-            ],
+            other_server_args=other_args,
         )
 
         if is_in_ci():
@@ -113,11 +129,14 @@ class TestBenchServing(CustomTestCase):
                 self.assertGreater(res["output_throughput"], 3700)
 
     def test_offline_throughput_default_fp8(self):
+        other_args = []
+        if os.environ.get("AMD_CI") == "1":
+            other_args += ["--mem-frac", "0.7"]
         res = run_bench_serving(
             model=DEFAULT_MODEL_NAME_FOR_TEST_FP8,
             num_prompts=500,
             request_rate=float("inf"),
-            other_server_args=[],
+            other_server_args=other_args,
         )
 
         if is_in_ci():
@@ -131,11 +150,15 @@ class TestBenchServing(CustomTestCase):
                 self.assertGreater(res["output_throughput"], 4300)
 
     def test_online_latency_default(self):
+        other_args = []
+        if os.environ.get("AMD_CI") == "1":
+            other_args += ["--mem-frac", "0.7"]
+
         res = run_bench_serving(
             model=DEFAULT_MODEL_NAME_FOR_TEST,
             num_prompts=100,
             request_rate=1,
-            other_server_args=[],
+            other_server_args=other_args,
         )
 
         if is_in_ci():

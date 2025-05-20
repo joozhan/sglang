@@ -4,7 +4,6 @@ python -m unittest test_eval_accuracy_large.TestEvalAccuracyLarge.test_mmlu
 """
 
 import os
-import time
 import unittest
 from types import SimpleNamespace
 
@@ -26,21 +25,21 @@ class TestEvalAccuracyLarge(CustomTestCase):
     def setUpClass(cls):
         cls.model = DEFAULT_MODEL_NAME_FOR_TEST
         cls.base_url = DEFAULT_URL_FOR_TEST
+
+        other_args = ["--log-level-http", "warning"]
+        if os.environ.get("AMD_CI") == "1":
+            other_args += ["--mem-frac", "0.7"]
+
         cls.process = popen_launch_server(
             cls.model,
             cls.base_url,
             timeout=DEFAULT_TIMEOUT_FOR_SERVER_LAUNCH,
-            other_args=["--log-level-http", "warning"],
+            other_args=other_args,
         )
 
     @classmethod
     def tearDownClass(cls):
         kill_process_tree(cls.process.pid)
-
-    def tearDown(self):
-        # Delay between tests to allow GPU memory cleanup
-        if os.getenv("SGLANG_AMD_CI") == "1":
-            time.sleep(180)
 
     def test_mmlu(self):
         args = SimpleNamespace(
