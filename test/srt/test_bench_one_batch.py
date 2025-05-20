@@ -20,7 +20,7 @@ class TestBenchOneBatch(CustomTestCase):
 
     def test_bs1_small(self):
         args = ["--cuda-graph-max-bs", "2"]
-        if os.environ.get("AMD_CI") == "1":
+        if os.environ.get("SGLANG_AMD_CI") == "1":
             args += ["--mem-frac", "0.7"]
 
         output_throughput = run_bench_one_batch(DEFAULT_SMALL_MODEL_NAME_FOR_TEST, args)
@@ -28,7 +28,7 @@ class TestBenchOneBatch(CustomTestCase):
 
     def test_bs1_default(self):
         args = ["--cuda-graph-max-bs", "2"]
-        if os.environ.get("AMD_CI") == "1":
+        if os.environ.get("SGLANG_AMD_CI") == "1":
             args += ["--mem-frac", "0.7"]
 
         output_throughput = run_bench_offline_throughput(
