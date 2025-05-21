@@ -488,10 +488,8 @@ class EAGLEWorker(TpModelWorker):
             ).cpu()
 
         # Forward
-        logits_output, _, can_run_cuda_graph = (
-            self.target_worker.forward_batch_generation(
-                model_worker_batch, skip_sample=True
-            )
+        logits_output, _ = self.target_worker.forward_batch_generation(
+            model_worker_batch, skip_sample=True
         )
 
         vocab_mask = None
