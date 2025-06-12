@@ -1476,6 +1476,7 @@ def get_compiler_backend() -> str:
         import torchair
 
         config = torchair.CompilerConfig()
+        config.inference_config.dynamic_gears_merge_policy = "zip"
         npu_backend = torchair.get_npu_backend(compiler_config=config)
         return npu_backend
 
